@@ -53,6 +53,7 @@ export interface Quests {
     QuestLabyrinth?: quests.QuestLabyrinth
     QuestLivingGarden?: quests.QuestLivingGarden
     QuestLostCity?: quests.QuestLostCity
+    QuestLunarNewYear?: quests.QuestLunarNewYear
     QuestMousoleum?: quests.QuestMousoleum
     QuestMoussuPicchu?: quests.QuestMoussuPicchu
     QuestPollutionOutbreak?: quests.QuestPollutionOutbreak // Toxic Spill
