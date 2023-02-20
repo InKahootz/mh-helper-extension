@@ -1251,7 +1251,6 @@ import * as detailingFuncs from './modules/details/legacy';
 
         // Then, get any global hunt details (such as from ongoing events, auras, etc).
         const globalHuntDetails = [
-            detailingFuncs.calcHalloweenHuntDetails,
             detailingFuncs.calcPillageHuntDetails,
         ].map((details_func) => details_func(message, user, user_post, hunt))
             .filter(details => details);
@@ -1265,7 +1264,6 @@ import * as detailingFuncs from './modules/details/legacy';
         // Finally, merge the details objects and add it to the message.
         if (locationHuntDetails || globalHuntDetails.length >= 0) {
             message.hunt_details = Object.assign({}, locationHuntDetails, ...globalHuntDetails, otherJournalDetails);
-        }
     }
 
     /**

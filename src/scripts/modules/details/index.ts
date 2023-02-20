@@ -2,6 +2,7 @@ import type {IDetailer, IEnvironmentDetailer} from './details.types';
 import {IceFortressDetailer} from './environments/iceFortress';
 import {HalloweenDetailer} from './global/halloween';
 import {SpringEggHuntDetailer} from './global/springEggHunt';
+import {HalloweenDetailer} from './global/halloween';
 import {LuckyCatchDetailer} from './global/luckyCatch';
 import {LunarNewYearDetailer} from './global/lunarNewYear';
 
@@ -14,6 +15,7 @@ const environmentDetailerModules: IEnvironmentDetailer[]  = [
 const globalDetailerModules: IDetailer[] = [
     new HalloweenDetailer(),
     new SpringEggHuntDetailer(),
+    new HalloweenDetailer(),
     new LuckyCatchDetailer(),
     new LunarNewYearDetailer(),
 ];
