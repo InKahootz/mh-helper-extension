@@ -4,6 +4,7 @@ import {GolemPayload, GolemResponse} from "./golem.types";
 import {HgResponse, JournalMarkup} from "@scripts/types/hg";
 import {EventDates} from "@scripts/util/constants";
 import {hasEventEnded} from "@scripts/util/time";
+import {getObjectFromProperty, hasOwnProperty} from "@scripts/util/utility";
 
 const rarities = ["area", "hat", "scarf"] as const;
 
@@ -30,12 +31,11 @@ export class GWHGolemAjaxHandler extends AjaxSuccessHandler {
 
     public async execute(responseJSON: HgResponse): Promise<void> {
         // Triggers on Golem claim, dispatch, upgrade, and on "Decorate" click (+others, perhaps).
-        if (!(responseJSON && typeof responseJSON === 'object' && 'golem_rewards' in responseJSON)) {
+        const golemData: GolemResponse | undefined = getObjectFromProperty(responseJSON, 'golem_rewards');
+        if (!golemData) {
             this.logger.debug("Skipped GWH golem submission since there are no golem rewards.", responseJSON);
             return;
         }
-
-        const golemData: GolemResponse = responseJSON.golem_rewards as GolemResponse;
         const uid = responseJSON.user.sn_user_id.toString();
         if (!uid) {
             this.logger.warn("Skipped GWH golem submission due to missing user attribution.", responseJSON);
@@ -130,5 +130,9 @@ export class GWHGolemAjaxHandler extends AjaxSuccessHandler {
         }
 
         return null;
+    }
+
+    private isGolemResponse(value: unknown): value is GolemResponse {
+        return typeof value === 'object' && Object.prototype.hasOwnProperty.call(value, 'golem_response');
     }
 }

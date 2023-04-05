@@ -59,7 +59,7 @@ export interface Quests {
     QuestMoussuPicchu?: quests.QuestMoussuPicchu
     QuestPollutionOutbreak?: quests.QuestPollutionOutbreak // Toxic Spill
     QuestQuesoGeyser?: quests.QuestQuesoGeyser
-    QuestRelicHunter?: unknown
+    QuestRelicHunter?: quests.QuestRelicHunter
     QuestRiftBristleWoods?: quests.QuestRiftBristleWoods
     QuestRiftBurroughs?: quests.QuestRiftBurroughs
     QuestRiftFuroma?: unknown
@@ -70,7 +70,6 @@ export interface Quests {
     QuestSpringHunt?: quests.QuestSpringHunt
     QuestTableOfContents?: quests.QuestTableOfContents
     QuestTrainStation?: unknown
-    QuestWinterHunt2021?: unknown
 }
 
 export type EnvironmentAttributes = unknown;
