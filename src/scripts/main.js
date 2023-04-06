@@ -1210,19 +1210,8 @@ import * as detailingFuncs from './modules/details/legacy';
         }
     }
 
-    /** @type {Object <string, Function>} */
+    /** @type {Object <string, (message: any, userPre: any, userPost: any, journal: any) => {} | undefined>} */
     const location_huntdetails_lookup = {
-        "Bristle Woods Rift": detailingFuncs.calcBristleWoodsRiftHuntDetails,
-        "Claw Shot City": detailingFuncs.calcClawShotCityHuntDetails,
-        "Fiery Warpath": detailingFuncs.calcFieryWarpathHuntDetails,
-        "Fort Rox": detailingFuncs.calcFortRoxHuntDetails,
-        "Harbour": detailingFuncs.calcHarbourHuntDetails,
-        "Sand Crypts": detailingFuncs.calcSandCryptsHuntDetails,
-        "Table of Contents": detailingFuncs.calcTableofContentsHuntDetails,
-        "Valour Rift": detailingFuncs.calcValourRiftHuntDetails,
-        "Whisker Woods Rift": detailingFuncs.calcWhiskerWoodsRiftHuntDetails,
-        "Zokor": detailingFuncs.calcZokorHuntDetails,
-        "Zugzwang's Tower": detailingFuncs.calcZugzwangsTowerHuntDetails,
     };
 
     /** @type { Object<string, import("./modules/details/details.types").IEnvironmentDetailer> } */
@@ -1251,7 +1240,7 @@ import * as detailingFuncs from './modules/details/legacy';
 
         // Then, get any global hunt details (such as from ongoing events, auras, etc).
         const globalHuntDetails = [
-            detailingFuncs.calcPillageHuntDetails,
+            calcPillageHuntDetails,
         ].map((details_func) => details_func(message, user, user_post, hunt))
             .filter(details => details);
 
