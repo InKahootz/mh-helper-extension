@@ -3,7 +3,7 @@ import {IntakeMessage} from "@scripts/types/mhct";
 
 export function getValidPreResponse(): HgResponse {
     return {
-        user: {} as User, // User is not validated here so we dont need it
+        user: {} as User, // User is validated separately. Use getDefaultUser in your tests
         page: {},
         success: 1,
     };
@@ -29,6 +29,7 @@ export function getDefaultUser(): User {
         trinket_item_id: 0,
         bait_name: 'Fake Cheese',
         bait_item_id: 0,
+        bait_quantity: 0,
         trap_power: 0,
         trap_power_bonus: 0,
         trap_luck: 0,

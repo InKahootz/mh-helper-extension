@@ -22,6 +22,7 @@ export interface User {
     trinket_item_id: number | null;
     bait_name: string;
     bait_item_id: number;
+    bait_quantity: number;
     trap_power: number;
     trap_power_bonus: number;
     trap_luck: number;

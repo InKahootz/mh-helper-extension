@@ -108,12 +108,15 @@ export class IntakeRejectionEngine {
         return invalidProperties;
     }
 
+    private validateObject<T>()
+
     private initResponseRules() {
         this.responseRules = ResponseRules;
     }
 
     private initUserRules() {
         this.userRules = UserRules;
+        this.userExemptions = UserExemptions;
     }
 
     private initMessageRules() {
