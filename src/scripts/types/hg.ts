@@ -9,6 +9,25 @@ export interface HgResponse {
     inventory?: Record<string, InventoryItem>  | []
 }
 
+export type HgConvertibleResponse = {
+    convertible_open: {
+        quantity: number,
+        name: string,
+        type: string
+        items: {
+            type: string,
+            name: string,
+            quantity: number
+        }[]
+    };
+    inventory: Record<string, {item_id: number}>;
+    items: Record<string, {
+        item_id: number,
+        name: string,
+        quantity: number
+    }>;
+} & HgResponse
+
 export interface User {
     user_id: number;
     sn_user_id: number;
