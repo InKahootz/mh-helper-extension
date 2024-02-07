@@ -315,7 +315,7 @@ import * as detailingFuncs from './modules/details/legacy';
             hunt_xhr.send = (...huntArgs) => {
                 $.ajax({
                     method: "post",
-                    url: "/managers/ajax/pages/page.php",
+                    url: "https://www.mousehuntgame.com/managers/ajax/pages/page.php",
                     data: {
                         sn: "Hitgrab",
                         page_class: "Camp",
@@ -700,41 +700,40 @@ import * as detailingFuncs from './modules/details/legacy';
         sendMessageToServer(convertible_intake_url, record);
     }
 
-    function sendMessageToServer(url, final_message) {
+    async function sendMessageToServer(url, final_message) {
         if (final_message.entry_timestamp == null) {
             final_message.entry_timestamp = getUnixTimestamp();
         }
 
-        getSettings(settings => {
-            if (!settings?.tracking_enabled) { return; }
-            const basic_info = {
-                hunter_id_hash,
-                entry_timestamp: final_message.entry_timestamp,
-                extension_version: mhhh_version,
-            };
+        const settings = await getSettingsAsync();
+
+        if (!settings?.tracking_enabled) { return; }
+        const basic_info = {
+            hunter_id_hash,
+            entry_timestamp: final_message.entry_timestamp,
+            extension_version: mhhh_version,
+        };
 
 
-            // Get UUID
-            $.post(base_domain_url + "/uuid.php", basic_info).done(data => {
-                if (data) {
-                    final_message.uuid = data;
-                    final_message.hunter_id_hash = hunter_id_hash;
-                    final_message.extension_version = mhhh_version;
-                    sendAlready(url, final_message);
-                }
-            });
-        });
+        // Get UUID
+        const data = await $.post(base_domain_url + "/uuid.php", basic_info);
+
+        if (data) {
+            final_message.uuid = data;
+            final_message.hunter_id_hash = hunter_id_hash;
+            final_message.extension_version = mhhh_version;
+            await sendAlready(url, final_message);
+        }
     }
 
-    function sendAlready(url, fin_message) {
+    async function sendAlready(url, fin_message) {
         // Send to database
-        $.post(url, fin_message)
-            .done(data => {
-                if (data) {
-                    const response = JSON.parse(data);
-                    showFlashMessage(response.status, response.message);
-                }
-            });
+        const data = await $.post(url, fin_message);
+
+        if (data) {
+            const response = JSON.parse(data);
+            showFlashMessage(response.status, response.message);
+        }
     }
 
     /**
@@ -1393,7 +1392,7 @@ import * as detailingFuncs from './modules/details/legacy';
         // Tell content script we are done loading
         window.postMessage({
             mhct_finish_load: 1,
-        });
+        }, window.origin);
 
         logger.info(`${versionInfo} loaded! Good luck!`);
     }
