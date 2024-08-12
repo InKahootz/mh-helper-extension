@@ -1,20 +1,17 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "target": "es6",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "moduleResolution": "Bundler",
     "outDir": "dist/scripts",
     "strict": true,
     "sourceMap": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable"
-    ],
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "noEmitOnError": true,
+    "noEmit": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "allowJs": true,
@@ -23,5 +20,11 @@
       "@tests/*": ["./tests/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "eslint.config.mjs",
+    "eslint.typings.d.ts",
+    "jest.config.mjs"
+  ]
 }

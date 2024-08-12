@@ -18,14 +18,7 @@ interface RewardTier {
     name: string; // A readable/nice english string of the title range
 }
 
-const TitleRanges = [
-    'novice_journeyman',
-    'master_lord',
-    'baron_duke',
-    'grand_duke_plus',
-] as const;
-
-export type TitleRange = typeof TitleRanges[number];
+export type TitleRange = 'novice_journeyman' | 'master_lord' | 'baron_duke' | 'grand_duke_plus';
 
 type Card = {
     id: number;

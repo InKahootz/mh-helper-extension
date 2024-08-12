@@ -20,7 +20,7 @@ export class FloatingIslandsStager implements IStager {
             return hsa.activated_island_mod_types.filter(t => t == type).length;
         };
 
-        const matcher = hsa.island_name.match(/^(Launch Pad|\w+).*$/);
+        const matcher = /^(Launch Pad|\w+).*$/.exec(hsa.island_name);
         if (!matcher) {
             throw new Error('Failed to match Floating Island\'s island name.');
         }

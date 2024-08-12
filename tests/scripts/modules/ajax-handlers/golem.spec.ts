@@ -1,9 +1,9 @@
 import {GWHGolemAjaxHandler} from '@scripts/modules/ajax-handlers/golem';
 import type {GolemPayload} from '@scripts/modules/ajax-handlers/golem.types';
 import {HgResponse} from '@scripts/types/hg';
+import {ConsoleLogger} from '@scripts/util/logger';
 
 jest.mock('@scripts/util/logger');
-import {ConsoleLogger} from '@scripts/util/logger';
 
 const logger = new ConsoleLogger();
 const showFlashMessage = jest.fn();

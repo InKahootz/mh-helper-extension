@@ -3,12 +3,12 @@ import {SpookyShuffleStatus} from "@scripts/modules/ajax-handlers/spookyShuffle.
 import {HgResponse} from "@scripts/types/hg";
 import {HgItem} from "@scripts/types/mhct";
 
-jest.mock('@scripts/util/logger');
-jest.mock('@scripts/util/hgFunctions');
-
 import {ConsoleLogger} from '@scripts/util/logger';
 import {getItemsByClass} from "@scripts/util/hgFunctions";
 import {CustomConvertibleIds} from "@scripts/util/constants";
+
+jest.mock('@scripts/util/logger');
+jest.mock('@scripts/util/hgFunctions');
 
 const logger = new ConsoleLogger();
 const submitConvertibleCallback = jest.fn() as jest.MockedFunction<(convertible: HgItem, items: HgItem[]) => void>;

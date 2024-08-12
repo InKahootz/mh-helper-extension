@@ -3,6 +3,7 @@ import {HgResponse, User} from '@scripts/types/hg';
 import {IntakeMessage} from '@scripts/types/mhct';
 import {ConsoleLogger} from '@scripts/util/logger';
 import {getValidPreResponse, getValidPostResponse, getDefaultUser, getDefaultIntakeMessage} from './common';
+
 jest.mock('@scripts/util/logger');
 
 // Mock logger won't actually call console.log

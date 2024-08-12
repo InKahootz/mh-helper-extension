@@ -4,9 +4,9 @@ import {HgResponse} from "@scripts/types/hg";
 import {HgItem} from "@scripts/types/mhct";
 import {CustomConvertibleIds, EventDates} from "@scripts/util/constants";
 import {addDays} from "@scripts/util/time";
+import {ConsoleLogger} from "@scripts/util/logger";
 
 jest.mock("@scripts/util/logger");
-import {ConsoleLogger} from "@scripts/util/logger";
 
 const logger = new ConsoleLogger();
 const submitConvertibleCallback = jest.fn() as jest.MockedFunction<(convertible: HgItem, items: HgItem[]) => void>;
