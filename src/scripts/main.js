@@ -454,6 +454,7 @@ import * as detailingFuncs from './modules/details/legacy';
 
         if (!safeParseResultPre.success || !safeParseResultPost.success) {
             logger.warn("Unexpected response type received", safeParseResultPre.error?.message, safeParseResultPost.error?.message);
+            return;
         }
 
         // General data flow
