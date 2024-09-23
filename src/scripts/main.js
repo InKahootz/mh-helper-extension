@@ -455,6 +455,9 @@ import * as detailingFuncs from './modules/details/legacy';
             return;
         }
 
+        const parsedPreResponse = safeParseResultPre.data;
+        const parsedPostResponse = safeParseResultPost.data;
+
         // General data flow
         // - Validate API response object
         // - Validate User object
@@ -464,13 +467,13 @@ import * as detailingFuncs from './modules/details/legacy';
 
         // This will throw out any hunts where the page.php or activeturn.php calls fail to return
         // the expected objects (success, active turn, needing a page object on pre)
-        let validated = rejectionEngine.validateResponse(pre_response, post_response);
+        let validated = rejectionEngine.validateResponse(parsedPreResponse, parsedPostResponse);
         if (!validated) {
             return;
         }
 
-        const user_pre = pre_response.user;
-        const user_post = post_response.user;
+        const user_pre = parsedPreResponse.user;
+        const user_post = parsedPostResponse.user;
         validated = rejectionEngine.validateUser(user_pre, user_post);
         if (!validated) {
             return;
@@ -534,7 +537,7 @@ import * as detailingFuncs from './modules/details/legacy';
         }
 
         // Find maximum entry id from pre_response
-        let max_old_entry_id = pre_response.page.journal.entries_string.match(/data-entry-id='(\d+)'/g);
+        let max_old_entry_id = parsedPreResponse.page.journal.entries_string.match(/data-entry-id='(\d+)'/g);
         if (!max_old_entry_id.length) {
             max_old_entry_id = 0;
         } else {
@@ -544,7 +547,7 @@ import * as detailingFuncs from './modules/details/legacy';
         }
         logger.debug(`Pre (old) maximum entry id: ${max_old_entry_id}`);
 
-        const hunt = parseJournalEntries(post_response, max_old_entry_id);
+        const hunt = parseJournalEntries(parsedPostResponse, max_old_entry_id);
         if (!hunt || Object.keys(hunt).length === 0) {
             logger.info("Missing Info (trap check or friend hunt)(2)");
             return;
@@ -570,7 +573,7 @@ import * as detailingFuncs from './modules/details/legacy';
 
             addStage(message, user, user_post, hunt);
             addHuntDetails(message, user, user_post, hunt);
-            addLoot(message, hunt, post_response.inventory);
+            addLoot(message, hunt, parsedPostResponse.inventory);
 
             return message;
         }
