@@ -5,6 +5,7 @@ import {BristleWoodsRiftStager} from './environments/bristleWoodsRift';
 import {BurroughsRiftStager} from './environments/burroughsRift';
 import {ClawShotCityStager} from './environments/clawShotCity';
 import {CursedCityStager} from './environments/cursedCity';
+import {DraconicDepthsStager} from './environments/draconicDepths';
 import {FieryWarpathStager} from './environments/fieryWarpath';
 import {FloatingIslandsStager} from './environments/floatingIslands';
 import {ForbiddenGroveStager} from './environments/forbiddenGrove';
@@ -12,6 +13,7 @@ import {ForewordFarmStager} from './environments/forewardFarm';
 import {FortRoxStager} from './environments/fortRox';
 import {FungalCavernStager} from './environments/fungalCavern';
 import {FuromaRiftStager} from './environments/furomaRift';
+import {GnawnianExpressStationStager} from './environments/gnawnianExpressStation';
 import {HarbourStager} from './environments/harbour';
 import {IcebergStager} from './environments/iceberg';
 import {IceFortressStager} from './environments/iceFortress';
@@ -42,6 +44,7 @@ const stageModules: IStager[]  = [
     new BurroughsRiftStager(),
     new ClawShotCityStager(),
     new CursedCityStager(),
+    new DraconicDepthsStager(),
     new FieryWarpathStager(),
     new FloatingIslandsStager(),
     new ForbiddenGroveStager(),
@@ -49,6 +52,7 @@ const stageModules: IStager[]  = [
     new FortRoxStager(),
     new FungalCavernStager(),
     new FuromaRiftStager(),
+    new GnawnianExpressStationStager(),
     new HarbourStager(),
     new IcebergStager(),
     new IceFortressStager(),

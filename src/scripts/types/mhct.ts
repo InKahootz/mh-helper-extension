@@ -7,6 +7,7 @@ export interface BaseIntakeMessage {
 
 export interface IntakeMessage extends BaseIntakeMessage {
     entry_id: number;
+    entry_timestamp: number;
     location: ComponentEntry | null;
     shield: boolean;
     total_power: number;

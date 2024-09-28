@@ -2,7 +2,7 @@ import {FortRoxStager} from "@scripts/modules/stages/environments/fortRox";
 import {IStager} from "@scripts/modules/stages/stages.types";
 import {User} from "@scripts/types/hg";
 import {IntakeMessage} from "@scripts/types/mhct";
-import {QuestFortRox} from "@scripts/types/quests";
+import {QuestFortRox} from "@scripts/types/hg/quests";
 
 describe('Fort Rox stages', () => {
     let stager: IStager;
@@ -51,6 +51,7 @@ describe('Fort Rox stages', () => {
 
     it('should throw when night stage is unknown', () => {
         preUser.quests.QuestFortRox!.is_night = true;
+        // @ts-expect-error - testing invalid input
         preUser.quests.QuestFortRox!.current_stage = 'stage_foo';
 
         expect(() => stager.addStage(message, preUser, postUser, journal))

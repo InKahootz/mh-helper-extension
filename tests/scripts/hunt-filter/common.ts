@@ -18,7 +18,7 @@ export function getValidPostResponse(): HgResponse {
 export function getDefaultUser(): User {
     return {
         user_id: 0,
-        sn_user_id: 0,
+        sn_user_id: '0',
         unique_hash: 'mhct',
         num_active_turns: 0,
         next_activeturn_seconds: 0,
@@ -49,6 +49,7 @@ export function getDefaultIntakeMessage(): IntakeMessage {
         uuid: "1",
         entry_timestamp: 0,
         extension_version: 0,
+        entry_timestamp: 0,
         hunter_id_hash: '0',
         entry_id: 0,
         location: {

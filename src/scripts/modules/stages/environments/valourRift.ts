@@ -1,13 +1,13 @@
 import {type User} from '@scripts/types/hg';
 import {type IntakeMessage} from '@scripts/types/mhct';
-import {type ValourRiftEnvironmentAttributes, type ValourRiftState, ValourRiftStates} from '@scripts/types/quests/valourRift';
+import {type ValourRiftEnvironmentAttributes, type ValourRiftState, ValourRiftStates} from '@scripts/types/hg/quests/valourRift';
 import {type IStager} from '../stages.types';
 
 export class ValourRiftStager implements IStager {
     readonly environment: string = 'Valour Rift';
 
     addStage(message: IntakeMessage, userPre: User, userPost: User, journal: unknown): void {
-        const attrs = userPre.environment_atts ?? userPre.enviroment_atts;
+        const attrs = userPre.enviroment_atts;
         const quest = userPre.quests.QuestRiftValour;
 
         if (!quest) {

@@ -2,11 +2,12 @@
 import {IntakeRejectionEngine} from "./hunt-filter/engine";
 import {ConsoleLogger, LogLevel} from './util/logger';
 import {getUnixTimestamp} from "./util/time";
+import {hgResponseSchema} from "./types/hg";
+import {HornHud} from './util/hornHud';
+import {parseHgInt} from "./util/number";
 import * as successHandlers from './modules/ajax-handlers';
-import {HornHud} from './util/HornHud';
 import * as detailers from './modules/details';
 import * as stagers from './modules/stages';
-import * as stagingFuncs from './modules/stages/legacy';
 import * as detailingFuncs from './modules/details/legacy';
 
 (function () {
@@ -164,10 +165,10 @@ import * as detailingFuncs from './modules/details/legacy';
             if (ev.data.mhct_message === 'crownSubmissionStatus') {
                 const counts = ev.data.submitted;
                 if (counts) {
-                    displayFlashMessage(ev.data.settings, "success",
+                    showFlashMessage("success",
                         `Submitted ${counts} crowns for ${$('span[class*="titleBar-name"]').text()}.`);
                 } else if (counts != null) {
-                    displayFlashMessage(ev.data.settings, "error", "There was an issue submitting crowns on the backend.");
+                    showFlashMessage("error", "There was an issue submitting crowns on the backend.");
                 } else {
                     logger.debug('Skipped submission (already sent).');
                 }
@@ -258,38 +259,10 @@ import * as detailingFuncs from './modules/details/legacy';
      * @param {string} message The message content to display.
      */
     function showFlashMessage(type, message) {
-        getSettings(settings => displayFlashMessage(settings, type, message));
-    }
-
-    /**
-     * Display the given message in an appropriately colored pop-up flash message.
-     * @param {Object <string, any>} settings The user's extension settings
-     * @param {"error"|"warning"|"success"} type The type of message being displayed, which controls the color and duration.
-     * @param {string} message The message content to display.
-     */
-    function displayFlashMessage(settings, type, message) {
-        if ((type === 'success' && !settings.success_messages)
-            || (type !== 'success' && !settings.error_messages)) {
-            return;
-        }
-        const mhhh_flash_message_div = $('#mhhh_flash_message_div');
-        mhhh_flash_message_div.text("MHCT Helper: " + message);
-
-        mhhh_flash_message_div.css('left', 'calc(50% - ' + (mhhh_flash_message_div.width() / 2) + 'px)');
-
-        if (type === 'success') {
-            mhhh_flash_message_div.css('background', 'lightgreen');
-            mhhh_flash_message_div.css('border', '1px solid green');
-        } else if (type === 'error') {
-            mhhh_flash_message_div.css('background', 'pink');
-            mhhh_flash_message_div.css('border', '1px solid red');
-        } else { // warning
-            mhhh_flash_message_div.css('background', 'gold');
-            mhhh_flash_message_div.css('border', '1px solid darkgoldenrod');
-        }
-
-        mhhh_flash_message_div.fadeIn(() => {
-            setTimeout(() => $('#mhhh_flash_message_div').fadeOut(), 1500 + 2000 * (type !== "success"));
+        window.postMessage({
+            mhct_display_message: 1,
+            type,
+            message,
         });
     }
 
@@ -353,6 +326,20 @@ import * as detailingFuncs from './modules/details/legacy';
                 }
             } else if (url.includes("mousehuntgame.com/managers/ajax/users/session.php")) {
                 createHunterIdHash();
+            }
+
+            try {
+                const parsedUrl = new URL(url);
+                // mobile api calls are not checked
+                if (parsedUrl.hostname === "www.mousehuntgame.com" && !parsedUrl.pathname.startsWith("/api/")) {
+                    const json = JSON.parse(xhr.responseText);
+                    const parseResult = hgResponseSchema.safeParse(json);
+                    if (!parseResult.success) {
+                        logger.warn("Unexpected response type received", parseResult.error?.message);
+                    }
+                }
+            } catch {
+                // Invalid url, JSON, or response is not JSON
             }
 
             for (const handler of ajaxSuccessHandlers) {
@@ -456,11 +443,18 @@ import * as detailingFuncs from './modules/details/legacy';
     }
 
     /**
-     * @param {Object <string, any>} pre_response The object obtained prior to invoking `activeturn.php`.
-     * @param {Object <string, any>} post_response Parsed JSON representation of the response from calling activeturn.php
+     * @param {unknown} pre_response The object obtained prior to invoking `activeturn.php`.
+     * @param {unknown} post_response Parsed JSON representation of the response from calling activeturn.php
      */
     function recordHuntWithPrehuntUser(pre_response, post_response) {
         logger.debug("In recordHuntWithPrehuntUser pre and post:", pre_response, post_response);
+
+        const safeParseResultPre = hgResponseSchema.safeParse(pre_response);
+        const safeParseResultPost = hgResponseSchema.safeParse(post_response);
+
+        if (!safeParseResultPre.success || !safeParseResultPost.success) {
+            logger.warn("Unexpected response type received", safeParseResultPre.error?.message, safeParseResultPost.error?.message);
+        }
 
         // General data flow
         // - Validate API response object
@@ -559,10 +553,10 @@ import * as detailingFuncs from './modules/details/legacy';
 
         /**
          *
-         * @param {Object<string, any>} user A the main user object (pre or post) used to populate the message
-         * @param {Object<string, any>} user_post The post-hunt user object
-         * @param {Object <string, any>} hunt Journal entry corresponding with the hunt
-         * @returns
+         * @param {import("./types/hg").User} user A the main user object (pre or post) used to populate the message
+         * @param {import("./types/hg").User} user_post The post-hunt user object
+         * @param {import("./types/hg").JournalMarkup} hunt Journal entry corresponding with the hunt
+         * @returns {import("./types/mhct").IntakeMessage | undefined}
          */
         function createIntakeMessage(user, user_post, hunt) {
             // Obtain the main hunt information from the journal entry and user objects.
@@ -738,10 +732,12 @@ import * as detailingFuncs from './modules/details/legacy';
 
     /**
      * Find the active journal entry, and handle supported "bonus journals" such as the Relic Hunter attraction.
-     * @param {Object <string, any>} hunt_response The JSON response returned from a horn sound.
-     * @returns {Object <string, any>} The journal entry corresponding to the active hunt.
+     * @param {import("./types/hg").HgResponse} hunt_response The JSON response returned from a horn sound.
+     * @param {number} max_old_entry_id
+     * @returns {import("./types/hg").JournalMarkup | null} The journal entry corresponding to the active hunt.
      */
     function parseJournalEntries(hunt_response, max_old_entry_id) {
+        /** @type {import("./types/hg").JournalMarkup & Object<string, unknown>} */
         let journal = {};
         const more_details = {};
         more_details.hunt_count = 0;
@@ -1013,19 +1009,16 @@ import * as detailingFuncs from './modules/details/legacy';
 
     /**
      * Initialize the message with main hunt details.
-     * @param {Object <string, any>} journal The journal entry corresponding to the active hunt.
-     * @param {Object <string, any>} user The user state object, when the hunt was invoked (pre-hunt).
-     * @param {Object <string, any>} user_post The user state object, after the hunt.
-     * @returns {Object <string, any> | null} The message object, or `null` if an error occurred.
+     * @param {import("./types/hg").JournalMarkup} journal The journal entry corresponding to the active hunt.
+     * @param {import("./types/hg").User} user The user state object, when the hunt was invoked (pre-hunt).
+     * @param {import("./types/hg").User} user_post The user state object, after the hunt.
+     * @returns {import("@scripts/types/mhct").IntakeMessage | null} The message object, or `null` if an error occurred.
      */
     function createMessageFromHunt(journal, user, user_post) {
+        /** @type {import("./types/mhct").IntakeMessage} */
         const message = {};
-        const debug_logs = [];
 
-        // Entry ID
         message.entry_id = journal.render_data.entry_id;
-
-        // Entry Timestamp
         message.entry_timestamp = journal.render_data.entry_timestamp;
 
         // Location
@@ -1037,36 +1030,20 @@ import * as detailingFuncs from './modules/details/legacy';
             name: user.environment_name,
             id: user.environment_id,
         };
-        if (user_post.environment_id != user.environment_id) {
-            debug_logs.push(`User auto-traveled from ${user.environment_name} to ${user_post.environment_name}`);
-        }
 
-        // Shield (true / false)
         message.shield = user.has_shield;
-
-        // Total Power, Luck, Attraction
         message.total_power = user.trap_power;
-        if (user_post.trap_power !== user.trap_power) {
-            debug_logs.push(`User setup power changed from ${user.trap_power} to ${user_post.trap_power}`);
-        }
-
         message.total_luck = user.trap_luck;
-        if (user_post.trap_luck !== user.trap_luck) {
-            debug_logs.push(`User setup luck changed from ${user.trap_luck} to ${user_post.trap_luck}`);
-        }
-
         message.attraction_bonus = Math.round(user.trap_attraction_bonus * 100);
-        if (user_post.trap_attraction_bonus !== user.trap_attraction_bonus) {
-            debug_logs.push(`User setup attraction bonus changed from ${user.trap_attraction_bonus} to ${user_post.trap_attraction_bonus}`);
-        }
 
-        // Setup components
         const components = [
             {prop: 'weapon', message_field: 'trap', required: true, replacer: / trap$/i},
             {prop: 'base', message_field: 'base', required: true, replacer: / base$/i},
             {prop: 'bait', message_field: 'cheese', required: true, replacer: / cheese$/i},
             {prop: 'trinket', message_field: 'charm', required: false, replacer: / charm$/i},
         ];
+
+        // Setup components
         // All pre-hunt users must have a weapon, base, and cheese.
         const missing = components.filter(component => component.required === true
             && !Object.prototype.hasOwnProperty.call(user, `${component.prop}_name`)
@@ -1086,13 +1063,10 @@ import * as detailingFuncs from './modules/details/legacy';
                     name: '',
                 }
                 : {
-                    id: user[prop_id],
+                    // Make sure any strumbers are converted to actual numbers
+                    id: parseHgInt(user[prop_id]),
                     name: item_name.replace(component.replacer, ''),
                 };
-
-            if (item_name !== user_post[prop_name]) {
-                debug_logs.push(`User ${component.message_field} changed: Was '${item_name}' and is now '${user_post[prop_name] || "None"}'`);
-            }
         });
 
         // Caught / Attracted / FTA'd
@@ -1116,8 +1090,6 @@ import * as detailingFuncs from './modules/details/legacy';
                 .replace(/<\/a>.*/i, '')    // Remove text after the first <a href>'s closing tag </a>
                 .replace(/ mouse$/i, '');  // Remove " [Mm]ouse" if it is not a part of the name (e.g. Dread Pirate Mousert)
         }
-
-        debug_logs.forEach(log_message => logger.debug(log_message));
 
         return message;
     }
@@ -1177,13 +1149,6 @@ import * as detailingFuncs from './modules/details/legacy';
         }
     }
 
-    /** @type {Object <string, Function>} */
-    const location_stage_lookup = {
-        "Festive Comet": stagingFuncs.addFestiveCometStage,
-        "Frozen Vacant Lot": stagingFuncs.addFestiveCometStage,
-        "Gnawnian Express Station": stagingFuncs.addTrainStage,
-    };
-
     /** @type {Object<string, import("./modules/stages/stages.types").IStager>} */
     const location_stager_lookup = {};
     for (const stager of stagers.stageModules) {
@@ -1198,12 +1163,6 @@ import * as detailingFuncs from './modules/details/legacy';
      * @param {Object <string, any>} hunt The journal entry corresponding to the active hunt
      */
     function addStage(message, user, user_post, hunt) {
-        // legacy staging funcs
-        const stage_func = location_stage_lookup[user.environment_name];
-        if (stage_func) {
-            stage_func(message, user, user_post, hunt);
-        }
-
         // IStagers
         const stager = location_stager_lookup[user.environment_name];
         if (stager) {
