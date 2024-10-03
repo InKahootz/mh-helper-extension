@@ -1,12 +1,27 @@
 {
     "compilerOptions": {
-        "types" : ["@types/node"],
-        "noEmit": true,
-        "allowJs": true
+      "pretty": true,
+      "moduleResolution": "node",
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "target": "ES6",
+      "module": "commonjs",
+      "lib": ["es5", "es6", "es7", "dom"],
+      "sourceMap": true,
+      "declaration": true,
+      "allowSyntheticDefaultImports": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "declarationDir": "dist/types",
+      "outDir": "dist",
+      "baseUrl": ".",
+      "plugins": [
+        {
+          "transform": "typescript-transform-paths"
+        }
+      ]
     },
-    "extends": "./tsconfig.json",
-    "include": [
-        ".eslintrc.js",
-        "jest.config.js"
-    ]
-}
+    "include": ["**/*"],
+    "exclude": ["**/dist"]
+  }
+  

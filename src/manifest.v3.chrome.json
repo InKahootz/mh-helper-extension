@@ -1,0 +1,50 @@
+{
+    "manifest_version": 3,
+    "author": "MHCT",
+    "name": "MHCT  MouseHunt Helper",
+    "short_name": "MHCT Helper",
+    "description": "Provides useful links and tracks MH game data for tools like rate calculators. Made by Tsitu, Tehhowch, Aardwolf, Jack and others.",
+    "version": "0.0.0",
+    "icons": {
+        "16": "images/icon16.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
+    },
+
+    "permissions": [
+        "notifications",
+        "tabs",
+        "scripting",
+        "storage"
+    ],
+
+    "host_permissions": [
+        "https://www.mousehuntgame.com/*"
+    ],
+
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "content/page-script.js",
+                "third_party/tsitu/*",
+                "third_party/potatosalad/*",
+                "images/*"
+            ],
+            "matches": ["https://www.mousehuntgame.com/*"]
+        }
+    ],
+
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+
+    "action": {
+        "default_icon": {
+            "16": "images/icon16.png",
+            "48": "images/icon48.png",
+            "128": "images/icon128.png"
+        },
+        "default_popup": "popup/index.html"
+    }
+}
