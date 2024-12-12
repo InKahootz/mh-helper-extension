@@ -90,13 +90,12 @@ export class AjaxInterceptorService implements IAjaxInterceptorService {
         sender: chrome.runtime.MessageSender,
         sendResponse: (response?: unknown) => void
     ) => {
-        this.logger.debug("Background: received extension message", message);
-
-        const handler: CallableFunction | undefined =
-            this.extensionMessageHandlers[message?.command];
+        const handler: CallableFunction | undefined = this.extensionMessageHandlers[message?.command];
         if (!handler) {
             return false;
         }
+
+        this.logger.debug("Background: received extension message", message);
 
         const messageResponse = handler({ message, sender });
         if (typeof messageResponse === "undefined") {

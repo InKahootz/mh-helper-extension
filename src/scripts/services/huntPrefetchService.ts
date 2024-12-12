@@ -13,10 +13,11 @@ export class HuntPrefetchService {
     private preHuntRequestId?: string;
     private preHuntData: HgResponse | null;
 
-    private userHunt$ = new Subject<{
+    private userHunt = new Subject<{
         preData: HgResponse;
         postData: HgResponse;
     }>();
+    userHunt$ = this.userHunt.asObservable();
 
     constructor(
         private logger: LoggerService,
@@ -27,7 +28,7 @@ export class HuntPrefetchService {
         const activeTurnFilter = (url: URL) => url.pathname === "/managers/ajax/turns/activeturn.php";
 
         this.ajaxInterceptorService.subscribe('ajaxRequest', async ({requestId, url, params}) => {
-            if (activeTurnFilter(url) || url.pathname === "/managers/ajax/board/board.php") {
+            if (activeTurnFilter(url)) {
                 await this.huntRequestObserver(requestId, params);
             }
         });
@@ -117,7 +118,7 @@ export class HuntPrefetchService {
                 post: response,
             });
 
-            this.userHunt$.next({
+            this.userHunt.next({
                 preData: this.preHuntData,
                 postData: postHuntData,
             });
